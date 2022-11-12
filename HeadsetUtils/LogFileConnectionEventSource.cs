@@ -44,8 +44,19 @@ namespace HeadsetUtils
 
             if (!lastFile.FullName.Equals(lastReadFilename, StringComparison.OrdinalIgnoreCase))
             {
-                log.Info($"New log file created:{lastFile.Name}, finish reading old file to not miss events");
-                ReadNewData();
+                log.Info($"New log file created:{lastFile.Name}");
+                if (lastReadFilename != null && lastReadFilename != String.Empty)
+                {
+                    log.Info($"Will attempt to finish reading previous log file: {lastReadFilename}");
+                    try
+                    {
+                        ReadNewData();
+                    } catch (Exception ex)
+                    {
+                        log.Warn("Failed reading old file data, error:", ex);
+                    }
+                }
+
                 ClearCurrentFileData();
                 lastReadFilename = lastFile.FullName;
             }
