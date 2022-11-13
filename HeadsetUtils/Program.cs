@@ -1,6 +1,7 @@
 ﻿using System;
 using HeadsetUtils;
 using log4net;
+using System.Diagnostics;
 
 namespace HeadsetUtils
 {
@@ -9,6 +10,7 @@ namespace HeadsetUtils
         private static log4net.ILog log = log4net.LogManager.GetLogger(nameof(Program));
         private static IDefaultAudioDeviceManager defaultAudioDeviceManager;
 
+        private static IConnectionEventSource source;
         private static string headsetName;
         private static string speakersName;
         static void Main(string[] args)
@@ -17,14 +19,15 @@ namespace HeadsetUtils
             headsetName = Configuration.GetString("HeadsetName");
             speakersName = Configuration.GetString("SpeakersName");
             log.Debug($"HeadsetName: {headsetName}, SpeakersName:{speakersName}");
-            IConnectionEventSource source = new LogFileConnectionEventSource(headsetName);
             defaultAudioDeviceManager = new PowershellDefaultAudioDeviceManager();
+            source = new LogFileConnectionEventSource(headsetName);
+            SetAutorun();
             source.OnConnected += OnConnected;
             source.OnDisconnected += OnDisconnected;
             Task.Delay(-1).Wait();
         }
 
-        public static void OnConnected()
+        private static void OnConnected()
         {
             log.Info("OnConnected Invoked");
             try
@@ -36,7 +39,7 @@ namespace HeadsetUtils
             }
         }
 
-        public static void OnDisconnected()
+        private static void OnDisconnected()
         {
             log.Info("OnDisconnected Invoked");
             try
@@ -46,6 +49,21 @@ namespace HeadsetUtils
             catch (Exception ex)
             {
                 log.Error($"Failed setting {speakersName} as default playback device, erorr:", ex);
+            }
+        }
+
+        private static void SetAutorun()
+        {
+            var shouldAutorun = Configuration.GetBool("Autorun");
+            try 
+            {
+                var startupManager = new StartupManager();
+                var exePath = Process.GetCurrentProcess().MainModule.FileName;
+                startupManager.SetRunAtStartup(nameof(HeadsetUtils), exePath, shouldAutorun);
+            }
+            catch (Exception ex)
+            {
+                log.Error($"Failed setting autorun to {shouldAutorun} error:", ex);
             }
         }
 
