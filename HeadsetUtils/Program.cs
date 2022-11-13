@@ -6,15 +6,18 @@ namespace HeadsetUtils
 {
     internal class Program
     {
-        private const string HeadsetName = "HS70 Pro";
-        private const string SpeakersName = "Speakers";
-
         private static log4net.ILog log = log4net.LogManager.GetLogger(nameof(Program));
         private static IDefaultAudioDeviceManager defaultAudioDeviceManager;
+
+        private static string headsetName;
+        private static string speakersName;
         static void Main(string[] args)
         {
             log.Info($"Running {nameof(HeadsetUtils)}...");
-            IConnectionEventSource source = new LogFileConnectionEventSource(HeadsetName);
+            headsetName = Configuration.GetString("HeadsetName");
+            speakersName = Configuration.GetString("SpeakersName");
+            log.Debug($"HeadsetName: {headsetName}, SpeakersName:{speakersName}");
+            IConnectionEventSource source = new LogFileConnectionEventSource(headsetName);
             defaultAudioDeviceManager = new PowershellDefaultAudioDeviceManager();
             source.OnConnected += OnConnected;
             source.OnDisconnected += OnDisconnected;
@@ -26,10 +29,10 @@ namespace HeadsetUtils
             log.Info("OnConnected Invoked");
             try
             {
-                defaultAudioDeviceManager.SetAsDefaultPlaybackDevice(HeadsetName);
+                defaultAudioDeviceManager.SetAsDefaultPlaybackDevice(headsetName);
             } catch (Exception ex)
             {
-                log.Error($"Failed setting {HeadsetName} as default playback device, erorr:", ex);
+                log.Error($"Failed setting {headsetName} as default playback device, erorr:", ex);
             }
         }
 
@@ -38,11 +41,11 @@ namespace HeadsetUtils
             log.Info("OnDisconnected Invoked");
             try
             {
-                defaultAudioDeviceManager.SetAsDefaultPlaybackDevice(SpeakersName);
+                defaultAudioDeviceManager.SetAsDefaultPlaybackDevice(speakersName);
             }
             catch (Exception ex)
             {
-                log.Error($"Failed setting {HeadsetName} as default playback device, erorr:", ex);
+                log.Error($"Failed setting {speakersName} as default playback device, erorr:", ex);
             }
         }
 
