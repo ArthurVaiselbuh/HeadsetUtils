@@ -12,7 +12,7 @@ namespace HeadsetUtils
     {
         private static log4net.ILog log = log4net.LogManager.GetLogger(nameof(LogFileConnectionEventSource));
 
-        private const string logLineRegex = "Process isConnected: ([a-z]+) for ([^:]+)";
+        private const string logLineRegex = "Process isConnected: ([a-z]+) for ([^\\(]+)";
 
         public event IConnectionEventSource.ConnectionEventHandler? OnConnected;
         public event IConnectionEventSource.ConnectionEventHandler? OnDisconnected;
