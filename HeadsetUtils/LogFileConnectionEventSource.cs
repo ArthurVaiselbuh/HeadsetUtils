@@ -27,7 +27,7 @@ namespace HeadsetUtils
         {
             this.deviceName = deviceName;
             this.logsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Corsair", "CUE4", "logs");
-            // Need to use filesystem watcher, for now check every second
+            // Unfortunately FileSystemWatcher is not reliable if the file is continuously written to, so have to use a timer..
             t = new Timer(RaiseEventIfNeeded, null, 1000, 1000);
         }
 

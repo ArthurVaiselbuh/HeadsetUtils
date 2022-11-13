@@ -18,7 +18,7 @@ namespace HeadsetUtils
             defaultAudioDeviceManager = new PowershellDefaultAudioDeviceManager();
             source.OnConnected += OnConnected;
             source.OnDisconnected += OnDisconnected;
-            Console.ReadLine();
+            Task.Delay(-1).Wait();
         }
 
         public static void OnConnected()

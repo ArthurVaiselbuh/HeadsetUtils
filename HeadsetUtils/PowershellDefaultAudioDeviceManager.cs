@@ -15,7 +15,16 @@ namespace HeadsetUtils
         {
             log.Info($"Attempting to set {name} as default audio device");
             // See https://community.spiceworks.com/topic/2292318-select-audio-device-with-powershell for library installation
-            using var process = Process.Start(PowershellPath, $"-ExecutionPolicy Bypass -command \"get-audiodevice -list | where Type -eq 'Playback'| where name -Like '*{name}*' | set-audiodevice\"");
+            var startingInfo = new ProcessStartInfo()
+            {
+                FileName = PowershellPath,
+                Arguments = $"-ExecutionPolicy Bypass -command \"get-audiodevice -list | where Type -eq 'Playback'| where name -Like '*{name}*' | set-audiodevice\"",
+                UseShellExecute = false,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            };
+            using var process = Process.Start(startingInfo);
             process.WaitForExit();
             log.Debug($"Script exited with code {process.ExitCode}");
         }
