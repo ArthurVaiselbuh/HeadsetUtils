@@ -3,5 +3,6 @@ Some wireless headsets are set as the default audio device as long as the dongle
 
 This utility is meant to change the system's default audio device when the headset is turned off/on.
 
-Current version is hard coded for Corsair's HS70 Pro, and assumes installation of iCue 4 and [AudioDeviceCmdlets](https://github.com/frgnca/AudioDeviceCmdlets) powershell module
+Current version requires iCue 4 and installing [AudioDeviceCmdlets](https://github.com/frgnca/AudioDeviceCmdlets) powershell module
 
+By default, the utility will register itself to run at windows startup. This and other configurations(like headset name) can be changed by modifying App.Config.
