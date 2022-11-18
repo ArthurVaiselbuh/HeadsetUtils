@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HeadsetUtils;
 using System.Text.RegularExpressions;
+using System.Runtime.CompilerServices;
 
 namespace HeadsetUtils
 {
@@ -33,6 +34,7 @@ namespace HeadsetUtils
             t = new Timer(RaiseEventIfNeeded, null, monitoringIntervalMs, monitoringIntervalMs);
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         private void RaiseEventIfNeeded(object? state)
         {
             log.Debug("Checking if need to raise event");
@@ -53,7 +55,9 @@ namespace HeadsetUtils
                     try
                     {
                         ReadNewData();
-                    } catch (Exception ex)
+                        log.Debug("Done reading previous log file");
+                    } 
+                    catch (Exception ex)
                     {
                         log.Warn("Failed reading old file data, error:", ex);
                     }
@@ -73,18 +77,20 @@ namespace HeadsetUtils
             lastReadOffset = 0;
         }
 
-        private async void ReadNewData()
+        private void ReadNewData()
         {
-            log.Debug($"Attempting to read new data from {lastReadFilename}");
+            log.Debug($"Attempting to read new data from {lastReadFilename}, from position: {lastReadOffset}");
             using var file = File.Open(lastReadFilename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
             file.Seek(lastReadOffset, SeekOrigin.Begin);
             using var reader = new StreamReader(file);
             
             string? line;
             bool? lastConnectionState = null;
-            while ((line = await reader.ReadLineAsync()) != null)
+            while ((line = reader.ReadLine()) != null)
             {
+                log.Verbose($"Read line: {line}");
                 var match = Regex.Match(line, logLineRegex);
+                log.Verbose($"Matches: {match.Length}");
                 if (!match.Success)
                     continue;
 
@@ -100,6 +106,7 @@ namespace HeadsetUtils
                 lastConnectionState = isConnected;
             }
             lastReadOffset = file.Position;
+            log.Verbose($"Updating {nameof(lastReadOffset)} to {lastReadOffset}");
 
             if (lastConnectionState == null)
                 return;
