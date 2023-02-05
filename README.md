@@ -5,4 +5,4 @@ This utility is meant to change the system's default audio device when the heads
 
 Current version requires iCue 4 and installing [AudioDeviceCmdlets](https://github.com/frgnca/AudioDeviceCmdlets) powershell module
 
-By default, the utility will register itself to run at windows startup. This and other configurations(like headset name) can be changed by modifying App.Config.
+By default, the utility will register itself to run at windows startup. This and other configurations(like headset name) can be changed by modifying `App.Config` and `HeadsetUtils.dll.config`.
