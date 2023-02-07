@@ -23,6 +23,8 @@ namespace HeadsetUtils
         private string lastReadFilename = String.Empty;
         private long lastReadOffset; // offset the last line we read ended in
         private Timer t;
+        private string connectedRegexOverride = null;
+        private string disconnectedRegexOverride = null;
 
         public LogFileConnectionEventSource(string deviceName)
         {
@@ -30,6 +32,14 @@ namespace HeadsetUtils
             this.logsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Corsair", "CUE4", "logs");
             // Unfortunately FileSystemWatcher is not reliable if the file is continuously written to, so have to use a timer..
             var monitoringIntervalMs = Configuration.GetInt("MonitoringIntervalMs");
+            connectedRegexOverride = Configuration.GetString("ConnectedRegexOverride");
+            disconnectedRegexOverride = Configuration.GetString("DisconnectedRegexOverride");
+            if (connectedRegexOverride != null)
+                log.Info($"Will try to match {nameof(connectedRegexOverride)} = {connectedRegexOverride}");
+            
+            if (disconnectedRegexOverride != null)
+                log.Info($"Will try to match {nameof(disconnectedRegexOverride)} = {disconnectedRegexOverride}");
+
             log.Info($"Will monitor changes every {monitoringIntervalMs}ms");
             t = new Timer(RaiseEventIfNeeded, null, monitoringIntervalMs, monitoringIntervalMs);
         }
@@ -89,22 +99,11 @@ namespace HeadsetUtils
             while ((line = reader.ReadLine()) != null)
             {
                 log.Verbose($"Read line: {line}");
-                var match = Regex.Match(line, logLineRegex);
-                log.Verbose($"Matches: {match.Length}");
-                if (!match.Success)
-                    continue;
-
-                if (!match.Groups[2].Value.Contains(deviceName, StringComparison.OrdinalIgnoreCase))
-                    continue;
-
-                log.Info($"Found matching line:{match.Value}");
-                if (!bool.TryParse(match.Groups[1].Value, out bool isConnected))
-                {
-                    log.Warn($"Failed parsing {match.Groups[1].Value} as bool, ignoring event");
-                    continue;
-                }
-                lastConnectionState = isConnected;
+                var lineMatch = TryMatchLine(line);
+                if (lineMatch != null)
+                    lastConnectionState = lineMatch;
             }
+
             lastReadOffset = file.Position;
             log.Verbose($"Updating {nameof(lastReadOffset)} to {lastReadOffset}");
 
@@ -115,6 +114,52 @@ namespace HeadsetUtils
                 OnConnected?.Invoke();
             else
                 OnDisconnected?.Invoke();
+        }
+
+        /// <summary>
+        /// Try matching a single line from the log file against the logic of connected/disconnected.
+        /// </summary>
+        /// <param name="line">The log line</param>
+        /// <returns>null if the line is irrelevant. otherwise returns true/false depending on the connection state. </returns>
+        private bool? TryMatchLine(string line)
+        {
+            Match match;
+            if (connectedRegexOverride != null)
+            {
+                match = Regex.Match(line, connectedRegexOverride);
+                if (match.Success)
+                {
+                    log.Info($"Line matched against {nameof(connectedRegexOverride)}");
+                    return true;
+                }
+            }
+            
+            if (disconnectedRegexOverride != null)
+            {
+                match = Regex.Match(line, disconnectedRegexOverride);
+                if (match.Success)
+                {
+                    log.Info($"Line matched against {nameof(disconnectedRegexOverride)}");
+                    return false;
+                }
+            }
+
+            match = Regex.Match(line, logLineRegex);
+            log.Verbose($"Matches: {match.Length}");
+            if (!match.Success)
+                return null;
+
+            if (!match.Groups[2].Value.Contains(deviceName, StringComparison.OrdinalIgnoreCase))
+                return null;
+
+            log.Info($"Found matching line:{match.Value}");
+            if (!bool.TryParse(match.Groups[1].Value, out bool isConnected))
+            {
+                log.Warn($"Failed parsing {match.Groups[1].Value} as bool, ignoring event");
+                return null;
+            }
+
+            return isConnected;
         }
     }
 }
