@@ -29,7 +29,8 @@ namespace HeadsetUtils
         public LogFileConnectionEventSource(string deviceName)
         {
             this.deviceName = deviceName;
-            this.logsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Corsair", "CUE4", "logs");
+            this.logsPath = GetLogsMonitoringDirectory();
+            log.Info($"Will monitor directory {logsPath} for logs");
             // Unfortunately FileSystemWatcher is not reliable if the file is continuously written to, so have to use a timer..
             var monitoringIntervalMs = Configuration.GetInt("MonitoringIntervalMs");
             connectedRegexOverride = Configuration.GetString("ConnectedRegexOverride");
@@ -160,6 +161,26 @@ namespace HeadsetUtils
             }
 
             return isConnected;
+        }
+
+        private string GetLogsMonitoringDirectory()
+        {
+            string[] supportedCueVersions = new[] { "CUE5", "CUE4" };
+            var logsDirectoryOverride = Configuration.GetString("LogsDirectoryOverride");
+            if (logsDirectoryOverride != null)
+            {
+                log.Info($"{nameof(logsDirectoryOverride)} is set, will monitor {logsDirectoryOverride}");
+                return logsDirectoryOverride;
+            }
+            foreach (var supportedVersion in supportedCueVersions)
+            {
+                var logsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Corsair", supportedVersion, "logs");
+                if (Directory.Exists(logsPath))
+                {
+                    return logsPath;
+                }
+            }
+            throw new DirectoryNotFoundException($"Failed to find directory for monitoring logs, consider setting {nameof(logsDirectoryOverride)} manually");
         }
     }
 }
