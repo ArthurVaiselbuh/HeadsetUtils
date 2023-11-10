@@ -9,9 +9,9 @@ By default, the utility will register itself to run at windows startup. This and
 
 Disclaimer - this software has no association to `Corsair Gaming, Inc` , is provided as-is without any warranty. See license for details.
 
-#How to setup?
+# How to setup?
 
-##iCUE 5
+## iCUE 5
 1. Install [AudioDeviceCmdlets](https://github.com/frgnca/AudioDeviceCmdlets) powershell module as instructed in the repository (Install to the windows's default powershell otherwise HeadsetUtils won't work!)
 2. Edit the config to look something like: 
 ```xml
@@ -28,7 +28,7 @@ Disclaimer - this software has no association to `Corsair Gaming, Inc` , is prov
 </configuration>
 ```
 
-##iCUE 4
+## iCUE 4
 1. Install [AudioDeviceCmdlets](https://github.com/frgnca/AudioDeviceCmdlets) powershell module as instructed in the repository (Install to the windows's default powershell otherwise HeadsetUtils won't work!)
 2. Edit the config to look something like: 
 ```xml
