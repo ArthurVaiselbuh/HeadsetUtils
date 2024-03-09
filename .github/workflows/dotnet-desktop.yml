@@ -2,7 +2,7 @@ name: 'Automated Build of HeadsetUtils'
 on: [push, pull_request]
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
       - name: Setup .NET
@@ -10,6 +10,6 @@ jobs:
         with:
           dotnet-version: 6.0.x
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore ./HeadsetUtils
       - name: Build
-        run: dotnet build
+        run: dotnet build ./HeadsetUtils
