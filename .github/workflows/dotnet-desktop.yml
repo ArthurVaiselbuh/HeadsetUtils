@@ -9,14 +9,17 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 6.0.x
+
       - name: Restore
         run: dotnet restore ./HeadsetUtils
+
       - name: Build
         run: dotnet build ./HeadsetUtils
+
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v4
         with:
-          name: artifact
-          path: ./HeadsetUtils/bin/Headsetutils.exe
+          name: HeadsetUtils.exe
+          path: ./HeadsetUtils/bin/Debug/net6.0-windows/Headsetutils.exe
           retention-days: 5
     
