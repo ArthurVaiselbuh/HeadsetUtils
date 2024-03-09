@@ -4,9 +4,9 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout
+      - uses: actions/checkout@main
       - name: Setup .NET
-        uses: actions/setup-dotnet
+        uses: actions/setup-dotnet@main
         with:
           dotnet-version: 6.0.x
 
@@ -17,7 +17,7 @@ jobs:
         run: dotnet build ./HeadsetUtils
 
       - name: 'Upload Artifact'
-        uses: actions/upload-artifact
+        uses: actions/upload-artifact@main
         with:
           name: HeadsetUtils.exe
           path: ./HeadsetUtils/bin/Debug/net6.0-windows/Headsetutils.exe
