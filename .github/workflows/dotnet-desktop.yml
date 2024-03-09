@@ -52,11 +52,11 @@ jobs:
       matrix:
         configuration: [Debug, Release]
 
-    runs-on: windows-latest  # For a list of available runner types, refer to
-                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: windows-latest   # For a list of available runner types, refer to
+                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
     env:
-      Solution_Name: HeadsetUtils/HeadsetUtils.sln     # Replace with your solution name, i.e. MyWpfApp.sln.
+      Solution_Name: HeadsetUtils.sln     # Replace with your solution name, i.e. MyWpfApp.sln.
       Wap_Project_Directory: HeadsetUtils                # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
 
     steps:
