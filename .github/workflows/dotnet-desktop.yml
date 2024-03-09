@@ -17,7 +17,7 @@ jobs:
         run: dotnet build ./HeadsetUtils
 
       - name: Move needed files
-        run: mkdir ./artifact-upload; mv .\HeadsetUtils\bin\Debug\net6.0-windows\ .\artifact-upload; mv .\HeadsetUtils\obj\Debug\net6.0-windows\ref .\artifact-upload; ls > .\artifact-upload\list.txt 
+        run: mkdir ./artifact-upload; mv .\HeadsetUtils\bin\Debug\net6.0-windows\ .\artifact-upload; mv .\HeadsetUtils\obj\Debug\net6.0-windows\ref .\artifact-upload; ls .\artifact-upload > .\artifact-upload\list.txt 
 
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@main
