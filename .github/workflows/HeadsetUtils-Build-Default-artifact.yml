@@ -1,22 +1,26 @@
 name: 'Automated Build of HeadsetUtils'
 on: [push, pull_request]
 jobs:
-  build:
+  setup:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@main
       - name: Setup .NET
         uses: actions/setup-dotnet@main
+        id: setup
         with:
           dotnet-version: 6.0.x
 
       - name: Restore
+        id: restore
         run: dotnet restore ./HeadsetUtils
 
       - name: Build
+        id: build
         run: dotnet build ./HeadsetUtils
 
       - name: Move needed files
+        id: collect
         run: mkdir ./artifact-upload; mv .\HeadsetUtils\bin\Debug\net6.0-windows\* .\artifact-upload; mv .\HeadsetUtils\obj\Debug\net6.0-windows\ref .\artifact-upload; echo '<?xml version="1.0"\nencoding="utf-8" ?>\n<configuration>\n\t<appSettings>\n\t\t<add key="MonitoringIntervalMs" value="1000"/>\n\t\t<add key="HeadsetName" value="Headset name here"/>\n\t\t<add key="SpeakersName" value="Speakers name here"/>\n\t\t<add key="Autorun" value="true"/>\n\t\t</appSettings>\n</configuration>' > .\artifact-upload\App.config
 
       - name: 'Upload Artifact'
