@@ -1,4 +1,4 @@
-name: 'Automated Build of HeadsetUtils'
+name: 'Automated Build of HeadsetUtils[Debug]'
 on: [push, pull_request]
 jobs:
   setup:
@@ -11,13 +11,9 @@ jobs:
         with:
           dotnet-version: 6.0.x
 
-      - name: Restore
-        id: restore
-        run: dotnet restore ./HeadsetUtils
-
       - name: Build
         id: build
-        run: dotnet build ./HeadsetUtils
+        run: dotnet build ./HeadsetUtils --configuration Debug
 
       - name: Move needed files
         id: collect
