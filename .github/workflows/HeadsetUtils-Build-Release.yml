@@ -1,4 +1,4 @@
-name: 'Automated Build of HeadsetUtils[Release]'
+name: 'Build HeadsetUtils[Release]'
 on: workflow_dispatch
 jobs:
   setup:
