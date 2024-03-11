@@ -39,7 +39,7 @@ jobs:
 
       - name: Build
         id: build
-        run: dotnet build ./HeadsetUtils --configuration Debug
+        run: dotnet build ./HeadsetUtils --configuration Release
 
       - name: Move needed files
         id: collect
