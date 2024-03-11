@@ -1,5 +1,31 @@
 name: 'Build HeadsetUtils[Release]'
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      reltag:
+        required: true
+        type: string
+        description: 'Release tag(version) to be used for the release'
+      draft:
+        required: false
+        type: boolean
+        default: true
+        description: 'Make it a draft release(unpublished release)?'
+      pre-release:
+        required: false
+        type: boolean
+        default: false
+        description: 'Make it a pre-release?'
+      gen-rel-notes:
+        required: false
+        type: boolean
+        default: false
+        description: 'Generate release notes automatically?'
+      latest:
+        required: false
+        type: boolean
+        default: false
+        description: 'Make it the latest release?'
 jobs:
   setup:
     runs-on: windows-latest
@@ -17,10 +43,20 @@ jobs:
 
       - name: Move needed files
         id: collect
-        run: mkdir ./artifact-upload; mv .\HeadsetUtils\bin\Release\net6.0-windows\* .\artifact-upload; mv .\HeadsetUtils\obj\Release\net6.0-windows\ref .\artifact-upload; echo '<?xml version="1.0"\nencoding="utf-8" ?>\n<configuration>\n\t<appSettings>\n\t\t<add key="MonitoringIntervalMs" value="1000"/>\n\t\t<add key="HeadsetName" value="Headset name here"/>\n\t\t<add key="SpeakersName" value="Speakers name here"/>\n\t\t<add key="Autorun" value="true"/>\n\t\t</appSettings>\n</configuration>' > .\artifact-upload\App.config
+        run: mkdir ./artifact-upload; mv .\HeadsetUtils\bin\Release\net6.0-windows\* .\artifact-upload; mv .\HeadsetUtils\obj\Release\net6.0-windows\ref .\artifact-upload; echo '<?xml version="1.0"\nencoding="utf-8" ?>\n<configuration>\n\t<appSettings>\n\t\t<add key="MonitoringIntervalMs" value="1000"/>\n\t\t<add key="HeadsetName" value="Headset name here"/>\n\t\t<add key="SpeakersName" value="Speakers name here"/>\n\t\t<add key="Autorun" value="true"/>\n\t\t</appSettings>\n</configuration>' > .\artifact-upload\App.config; Compress-Archive -Path .\artifact-upload -DestinationPath .\HeadsetUtils-v${{ github.event.inputs.reltag }}.zip -CompressionLevel Optimal -Confirm; echo ${{github.ref}} > ./github.ref.txt
 
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@main
         with:
-          name: artifact
-          path: .\artifact-upload
+          name: Release-artifact
+          path: .\github.ref.txt
+          retention-days: 1
+
+      - name: 'Create release'
+        uses: softprops/action-gh-release@master
+        with:
+          tag_name: ${{ github.event.inputs.reltag }}
+          draft: ${{ github.event.inputs.draft }}
+          prerelease: ${{ github.event.inputs.pre-release }}
+          files: .\HeadsetUtils-v${{ github.event.inputs.reltag }}.zip
+          make_latest: ${{ github.event.inputs.latest }}
