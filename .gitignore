@@ -398,3 +398,5 @@ FodyWeavers.xsd
 *.sln.iml
 .vscode/tasks.json
 .vscode/launch.json
+HeadsetUtils-v1.0.zip
+/artifact-upload
