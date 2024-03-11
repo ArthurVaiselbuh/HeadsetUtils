@@ -43,14 +43,14 @@ jobs:
 
       - name: Move needed files
         id: collect
-        run: mkdir ./artifact-upload; mv .\HeadsetUtils\bin\Release\net6.0-windows\* .\artifact-upload; mv .\HeadsetUtils\obj\Release\net6.0-windows\refint\HeadsetUtils.dll .\artifact-upload\ref\; echo '<?xml version="1.0"\nencoding="utf-8" ?>\n<configuration>\n\t<appSettings>\n\t\t<add key="MonitoringIntervalMs" value="1000"/>\n\t\t<add key="HeadsetName" value="Headset name here"/>\n\t\t<add key="SpeakersName" value="Speakers name here"/>\n\t\t<add key="Autorun" value="true"/>\n\t\t</appSettings>\n</configuration>' > .\artifact-upload\App.config; Compress-Archive -Path .\artifact-upload -DestinationPath .\HeadsetUtils-v${{ github.event.inputs.reltag }}.zip -CompressionLevel Optimal;
+        run: mkdir ./artifact-upload; mv .\HeadsetUtils\bin\Release\net6.0-windows\* .\artifact-upload; mv .\HeadsetUtils\obj\Release\net6.0-windows\refint\HeadsetUtils.dll .\artifact-upload\ref\; echo '<?xml version="1.0"\nencoding="utf-8" ?>\n<configuration>\n\t<appSettings>\n\t\t<add key="MonitoringIntervalMs" value="1000"/>\n\t\t<add key="HeadsetName" value="Headset name here"/>\n\t\t<add key="SpeakersName" value="Speakers name here"/>\n\t\t<add key="Autorun" value="true"/>\n\t\t</appSettings>\n</configuration>' > .\artifact-upload\App.config;
 
       - name: 'Upload Artifact'
         id: upload
         uses: actions/upload-artifact@main
         with:
-          name: Release-artifact
-          path: .\HeadsetUtils-v${{ github.event.inputs.reltag }}.zip
+          name: HeadsetUtils-v${{ github.event.inputs.reltag }}
+          path: .\artifact-upload
           retention-days: 1
 
       - name: 'Create release'
