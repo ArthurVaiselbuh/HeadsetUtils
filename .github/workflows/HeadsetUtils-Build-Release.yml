@@ -27,7 +27,7 @@ on:
         default: false
         description: 'Make it the latest release?'
 jobs:
-  Build:
+  Build-HeadsetUtils:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@main
@@ -52,9 +52,6 @@ jobs:
           path: .\github.ref.txt
           retention-days: 1
 
-  Release:
-    runs-on: windows-latest
-    steps:
       - name: 'Create release'
         uses: softprops/action-gh-release@master
         with:
