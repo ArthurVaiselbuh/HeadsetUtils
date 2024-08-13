@@ -60,10 +60,10 @@ jobs:
           retention-days: 30
 
       - name: 'Create release'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.event.inputs.reltag }}
           draft: ${{ github.event.inputs.draft }}
           prerelease: ${{ github.event.inputs.pre-release }}
-          files: .\HeadsetUtils.zip
+          files: ./HeadsetUtils.zip
           make_latest: ${{ github.event.inputs.latest }}
