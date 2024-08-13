@@ -43,7 +43,13 @@ jobs:
 
       - name: Move needed files
         id: collect
-        run: mkdir ./artifact-upload; mv .\HeadsetUtils\bin\Release\net6.0-windows\* .\artifact-upload; mv .\HeadsetUtils\obj\Release\net6.0-windows\refint\HeadsetUtils.dll .\artifact-upload\ref\; echo '<?xml version="1.0"\nencoding="utf-8" ?>\n<configuration>\n\t<appSettings>\n\t\t<add key="MonitoringIntervalMs" value="1000"/>\n\t\t<add key="HeadsetName" value="Headset name here"/>\n\t\t<add key="SpeakersName" value="Speakers name here"/>\n\t\t<add key="Autorun" value="true"/>\n\t\t</appSettings>\n</configuration>' > .\artifact-upload\App.config; Compress-Archive -Path .\artifact-upload -DestinationPath .\HeadsetUtils-${{ github.event.inputs.reltag }}.zip -compressionlevel NoCompression
+        run: |
+          mkdir ./artifact-upload
+          mv .\HeadsetUtils\bin\Release\net6.0-windows\* .\artifact-upload
+          mv .\HeadsetUtils\obj\Release\net6.0-windows\refint\HeadsetUtils.dll .\artifact-upload\ref\
+          echo '<?xml version="1.0"\nencoding="utf-8" ?>\n<configuration>\n\t<appSettings>\n\t\t<add key="MonitoringIntervalMs" value="1000"/>\n\t\t<add key="HeadsetName" value="Headset name here"/>\n\t\t<add key="SpeakersName" value="Speakers name here"/>\n\t\t<add key="Autorun" value="true"/>\n\t\t</appSettings>\n</configuration>' > .\artifact-upload\App.config
+          cp .\artifact-upload\App.config .\artifact-upload\HeadsetUtils.dll.config
+          Compress-Archive -Path .\artifact-upload -DestinationPath .\HeadsetUtils.zip -compressionlevel NoCompression
 
       - name: 'Upload Artifact'
         id: upload
@@ -51,13 +57,13 @@ jobs:
         with:
           name: HeadsetUtils-v${{ github.event.inputs.reltag }}
           path: .\artifact-upload
-          retention-days: 1
+          retention-days: 30
 
       - name: 'Create release'
-        uses: softprops/action-gh-release@master
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.event.inputs.reltag }}
           draft: ${{ github.event.inputs.draft }}
           prerelease: ${{ github.event.inputs.pre-release }}
-          files: .\HeadsetUtils-${{ github.event.inputs.reltag }}.zip
+          files: .\HeadsetUtils.zip
           make_latest: ${{ github.event.inputs.latest }}
