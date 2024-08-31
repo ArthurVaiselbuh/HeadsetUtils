@@ -35,14 +35,14 @@ jobs:
         uses: actions/setup-dotnet@main
         id: setup
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 8.x
 
       - name: Build
         id: build
         run: dotnet build ./HeadsetUtils --configuration Release
 
-      - name: Move needed files
-        id: collect
+      - name: Collect and write required files
+        id: collect-write
         run: |
           mkdir ./artifact-upload
           mv .\HeadsetUtils\bin\Release\net6.0-windows\* .\artifact-upload
