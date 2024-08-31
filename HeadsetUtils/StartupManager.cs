@@ -22,7 +22,7 @@ namespace HeadsetUtils
             }
             else
             {
-                key.DeleteValue(startupKey);
+                key.DeleteValue(programName);
             }
         }
     }
