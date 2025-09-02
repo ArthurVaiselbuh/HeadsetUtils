@@ -50,7 +50,7 @@ namespace HeadsetUtils
         {
             log.Debug("Checking if need to raise event");
             var info = new DirectoryInfo(logsPath);
-            var lastFile = info.GetFiles().OrderByDescending(fl => fl.CreationTimeUtc).FirstOrDefault();
+            var lastFile = info.GetFiles().OrderByDescending(fl => fl.LastWriteTimeUtc).FirstOrDefault();
             if (lastFile == null)
             {
                 log.Debug("No log files foud");
